@@ -13,8 +13,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
-        return Inertia::render('products/index');
+        $products = Product::latest()->get(); // you can also paginate: ->paginate(10)
+    
+        return Inertia::render('products/index', [
+            'products' => $products
+        ]);
     }
 
     /**
@@ -23,6 +26,7 @@ class ProductController extends Controller
     public function create()
     {
         //
+        return Inertia::render('products/create');
     }
 
     /**
@@ -31,6 +35,20 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'image' => 'nullable|image|max:2048', // allow only images under 2MB
+        ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = $path;
+        }
+
+        Product::create($validated);
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully!');
     }
 
     /**

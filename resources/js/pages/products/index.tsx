@@ -1,7 +1,14 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+// import { PageProps } from '@/types'; // Adjust if you have a custom type
+
+type Product = {
+    id: number;
+    name: string;
+    price: number;
+    image: string | null;
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -10,25 +17,49 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function ProductListing() {
+export default function Index() {
+    const { products } = usePage<{ products: Product[] }>().props;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Products" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    {/* <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div> */}
+                <div className="ml-auto border-r-4">
+                    <Link className="bg-indigo-500 p-2 text-white rounded" as="button" href={route('products.create')}>
+                        Add Products
+                    </Link>
                 </div>
-                <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                </div>
+
+                <table className="w-full table-auto text-center border mt-4">
+                    <thead>
+                        <tr >
+                            <th className="border p-2">ID</th>
+                            <th className="border p-2">Name</th>
+                            <th className="border p-2">Price</th>
+                            <th className="border p-2">Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {products.map((product) => (
+                            <tr key={product.id}>
+                                <td className="border p-2">{product.id}</td>
+                                <td className="border p-2">{product.name}</td>
+                                <td className="border p-2">${product.price}</td>
+                                <td className="border p-2">
+                                    {product.image ? (
+                                        <img
+                                            src={`/storage/${product.image}`}
+                                            alt={product.name}
+                                            className="h-12 w-12 object-cover mx-auto"
+                                        />
+                                    ) : (
+                                        'N/A'
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </AppLayout>
     );
