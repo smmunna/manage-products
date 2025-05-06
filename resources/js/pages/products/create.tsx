@@ -25,7 +25,8 @@ export default function Index() {
         post(route('products.store'), {
             forceFormData: true,
             onSuccess: () => {
-                console.log('Success');
+                // console.log('Success');
+                alert('Product stored successfully')
                 reset(); // reset form on success
             },
         });
